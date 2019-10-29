@@ -1,0 +1,29 @@
+/* 参数说明：留白0像素 ，每列100像素,栅格化系统 750，间距30，6列 */
+/*@include getGrid('-list5', 300, 670, 70, 2);*/
+@mixin getGrid($gridModule:'',$gridItemWidth:100,$gridItemWidthTotal:750,$gridItemSpace:30,$gridItemColumns:6) {
+    .grid-item#{$gridModule} {
+        margin-right: percentage($gridItemSpace/$gridItemWidthTotal);
+        float: left;
+        display: inline-block;
+        &.grid-fixed {
+            margin-right: 0;
+        }
+
+        @for $i from 1 through $gridItemColumns {
+            $temp: $gridItemWidth*$i + $gridItemSpace*$i - $gridItemSpace;
+            &.grid-#{$i} {
+                width: percentage($temp/$gridItemWidthTotal);
+            }
+        }
+    }
+
+    html[lang="ar"] .grid-item#{$gridModule}, html[lang="fa"] .grid-item#{$gridModule} {
+        margin-right: auto;
+        margin-left: percentage($gridItemSpace/$gridItemWidthTotal);
+        float: right;
+        &.grid-fixed {
+            margin-left: 0;
+            margin-right: auto;
+        }
+    }
+}

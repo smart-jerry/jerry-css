@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>欺骗词法作用域的方法</title>
+    <style>
+        html,body{
+            font-size: 28px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    不推荐使用 eval(..) 和 with 的原因:<br />
+    <p>1, 会被严格模式所影响（限制）。 with 被完全禁止，而在保留核心功能的前提下，间接或非安全地使用eval(..) 也被禁止了。</p>
+    <p>2, 严重影响性能，因为这两个机制的副作用是引擎无法在编译时对作用域查找进行优化</p>
+</div>
+</body>
+</html>
+<script>
+    /*
+    * 方法一，eval
+    * new Function，
+    * setTimeout，setInterval
+    * eval(..) 函数如果接受了含有一个或多个声明的代码，就会修改其所处的词法作用域
+    * */
+    function bar (str) {
+        eval(str);
+        console.log(b);
+    }
+    bar('var b=3'); // 3
+
+    function foo (str) {
+        /*在严格模式的程序中， eval(..) 在运行时有其自己的词法作用域，意味着其
+        中的声明无法修改所在的作用域。*/
+    	"use strict";
+        eval(str);
+        console.log(b);
+    }
+//    foo('var b=5'); // b is not defined
+
+    /*
+    * 方法二，with
+    * 1, with 声明实际上是根据你传递给它的对象凭空创建了一个全新的词法作用域
+    * 2, 尽管 with 块可以将一个对象处理为词法作用域，但是这个块内部正常的 var
+    * 声明并不会被限制在这个块的作用域中，而是被添加到 with 所处的函数作用域中。
+    *
+    * */
+    function witha (str) {
+        // "use strict"; //严格模式下，with是完全被禁止的
+    	with (str){
+    		var s = 5 //此次申明的变量，其作用域是witha函数内
+    		a = 2
+        }
+        console.log(s);
+    }
+    var test1 = {a:5, b:6};
+    witha(test1);
+    console.log(test1.a, test1.b); // 2, 6
+
+    var test2 = {c:5, b:6};
+    witha(test2);
+    console.log(test2, test2.a, a); // {c:5,b:6},undefined, 2
+    // a 被提升为全局变量了
+
+</script>

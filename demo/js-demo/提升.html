@@ -67,6 +67,7 @@
     /*
     * var的申明和函数的声明混合----demo4
     * 打印这里是foo4的函数申明的原因：函数声明和变量声明都会被提升,但函数优先，其次才是变量
+    * 重复声明会被覆盖
     * */
     foo4();// 这里是foo4的函数申明
     var foo4 = function () {
@@ -78,18 +79,45 @@
 
     /*
      * var的申明和函数的声明混合----demo5（重复声明）
-     * 重复声明会被覆盖
+     * 1,与demo4的区别，加了if判断
+     *
+     *
      * */
-    foo5();
+    foo5();// typeError
     var b = true;
     if(b){
-    	function foo5 () {
+    	function foo5() {
             console.log('这里是if中的off5')
         }
     }else{
-    	function foo5 () {
+        function foo5() {
             console.log('这里是else中的foo5');
         }
     }
-    foo5();
+    /*
+    * 疑惑：
+    * 1，var声明的变量无论写在哪里都一样，因为他始终都会属于外部作用域。故此处的a3在if外面也是可以访问的。
+    * 编译器编译时候，申明C，a3
+    * 引擎运行时候：第一个a3未被赋值故undefined，第二个a3经过程序后被赋值故打印1.
+    * 下面这段代码可以这样理解：
+    * （1，）申明a 、c
+    * （2，）console.log(a3);
+    * c=true
+    * if(c){
+    *   a3=1
+    * }else{
+    *   a3=2
+    * }
+    * console.log(a3);
+    *
+    * 解释：变量的申明和赋值是被分开的。
+    * */
+    console.log(a3);
+    var c = true;
+    if (c) {
+        var a3 = 1;
+    } else {
+        var a3 = 2
+    }
+    console.log(a3);
 </script>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>函数作用域和块作用域</title>
 </head>
-<body>
+<body style="font-size: 1.4rem;">
 <div>
     <h2>函数作用域</h2>
     <div>优点：</div>
@@ -14,8 +14,8 @@
         1, 必须声明一个具名函数，如foo()。即代表foo污染了所在的作用域。<br />
         2, 必须显示调用foo()函数，才能正常运行其中的代码。
     </div>
-    <div>
-        <h3>解决方案</h3>
+    <div style="margin-top: 20px;">
+        <b>解决方案</b>
         <ul>
             <li>1，函数表达式: (function foo(){ .. })</li>
             <li>扩展a：立即执行函数写法(function(){ .. }())或(function(){ .. })()</li>
@@ -23,9 +23,26 @@
         </ul>
     </div>
 </div>
+<div style="margin-top: 50px;">
+    <h2>块级作用域</h2>
+    <div>表面上看 JavaScript 并没有块作用域的相关功能</div>
+    <div>解决方案：let-----let 关键字可以将变量绑定到所在的任意作用域中（通常是 { .. } 内部）</div>
+</div>
+
+
+<div style="margin-top: 50px;">
+    <h2>动态作用域</h2>
+    <div>作用域链是基于调用栈的，而不是代码中的作用域嵌套。</div>
+    <div> JavaScript 并不具有动态作用域。它只有词法作用域，简单明了。<br />
+        但是 this 机制某种程度上很像动态作用域。</div>
+</div>
 </body>
 </html>
 <script>
+    /*
+    * 一，函数作用域
+    *
+    * */
     var a=3;
     function foo () {
         a=5;
@@ -33,4 +50,62 @@
     }
     foo();
     console.log(a);// 5
+
+    /*
+    * 二，块作用域----用var申明
+    * 问题：if和for内部申明的变量外部都可以访问？
+    * 原因：当使用 var 声明变量时，它写在哪里都是一样的，因为它们最终都会属于外部作用域。
+    * 解决方案：用let
+    * */
+    // 块作用域-demo1
+    for (var i = 0; i < 10; i++) {
+        console.log(i + '====i');
+    }
+    console.log(i);// 10
+
+    // 块作用域-demo2
+    if(true){
+    	var test = '我是if内部的';
+    }
+    // 当使用 var 声明变量时，它写在哪里都是一样的，因为它们最终都会属于外部作用域。
+    console.log(test);// 我是if内部的
+
+    // 块作用域-demo3
+    var obj={a:8};
+    with(obj){
+        a = 1;
+        b = 2;
+        c = 3;
+    }
+    console.log(obj, b, c);// {a:1}，2, 3
+
+
+    // 块作用域-demo4
+    if(true){
+    	let m = 5; //let 关键字可以将变量绑定到所在的任意作用域中（通常是 { .. } 内部）
+    	console.log('if内部：'+m);
+    }
+    console.log(m);// ReferenceError: m is not defined
+
+
+
+    /*
+     * 三，动态作用域
+     * 作用域链是基于调用栈的，而不是代码中的作用域嵌套。
+     * */
+    // 动态作用域-demo1
+    function foo1() {
+        // 打印2的原因：因为当 foo() 无法找到 a 的变量引用时，会顺着调用栈在调用 foo() 的地方查找 a ，而不是在嵌套的词法作用域链中向上查找。
+        console.log( 'foo1中的a='+a ); // 2
+    }
+    function bar1() {
+        var a = 3;
+        foo1();
+        function foo2 () {
+            console.log('foo2中的a='+a); // 3
+        }
+        foo2();
+    }
+    var a = 2;
+    bar1();
 </script>

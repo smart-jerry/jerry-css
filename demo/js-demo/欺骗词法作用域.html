@@ -25,6 +25,8 @@
     这两个机制的副作用是引擎无法在编译时对作用域查找进行优化，因为引擎只能谨慎地认
     为这样的优化是无效的。使用这其中任何一个机制都将导致代码运行变慢。不要使用它们。
 </div>
+
+
 </body>
 </html>
 <script>
@@ -59,7 +61,7 @@
     function witha (str) {
         // "use strict"; //严格模式下，with是完全被禁止的
     	with (str){
-    		var s = 5 //此次申明的变量，其作用域是witha函数内
+    		var s = 5 //此次申明的变量，其作用域是witha函数内(即with所在的作用域)
     		a = 2
         }
         console.log(s);
@@ -72,5 +74,6 @@
     witha(test2);
     console.log(test2, test2.a, a); // {c:5,b:6},undefined, 2
     // a 被提升为全局变量了
+
 
 </script>

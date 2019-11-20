@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>函数作用域和块作用域</title>
+</head>
+<body>
+<div>
+    <h2>函数作用域</h2>
+    <div>优点：</div>
+    <div>1, 隐藏内部的变量和函数</div>
+    <div>缺点</div>
+    <div>
+        1, 必须声明一个具名函数，如foo()。即代表foo污染了所在的作用域。<br />
+        2, 必须显示调用foo()函数，才能正常运行其中的代码。
+    </div>
+    <div>
+        <h3>解决方案</h3>
+        <ul>
+            <li>1，函数表达式: (function foo(){ .. })</li>
+            <li>扩展a：立即执行函数写法(function(){ .. }())或(function(){ .. })()</li>
+            <li>扩展b：匿名函数表达式(function(){ .. }())。具名函数表达式(function foo(){ .. }())</li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    var a=3;
+    function foo () {
+        a=5;
+        console.log(a); // 5
+    }
+    foo();
+    console.log(a);// 5
+</script>

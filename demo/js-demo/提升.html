@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>提升</title>
+</head>
+<body>
+<div>
+    <ul>
+        <li>1，我们习惯将 var a = 2; 看作一个声明，而实际上 JavaScript 引擎并不这么认为。</li>
+        <li>2，它将 var a和 a = 2 当作两个单独的声明，第一个是编译阶段的任务，而第二个则是执行阶段的任务。</li>
+        <li>3,这意味着无论作用域中的声明出现在什么地方，都将在代码本身被执行前首先进行处理。</li>
+        <li>4,可以将这个过程形象地想象成所有的声明（变量和函数）都会被“移动”到各自作用域的
+            最顶端，这个过程被称为提升。</li>
+        <li>5,注意：声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升。</li>
+        <li>6,要注意避免重复声明，特别是当普通的 var 声明和函数声明混合在一起的时候，否则会引
+            起很多危险的问题！见demo5</li>
+        <li>
+            函数声明和变量声明都会被提升,但函数优先，其次才是变量。建demo4
+        </li>
+    </ul>
+</div>
+</body>
+</html>
+<script>
+    // 函数的声明-demo1（变量在函数内部）
+    foo();
+    function foo () {
+        var a =1;
+        console.log(a); // 1
+    }
+
+    /*
+    * 函数的申明---demo2（变量是全局）
+    * 下面这段代码这样理解
+    * 1，函数foo1的申明，变量a1的声明
+    * 2，函数foo1的执行
+    * function foo1(){
+    *   console.log(a1);
+    * }
+    * 3，变量a的赋值
+    * a1=1;
+    *
+    * */
+    foo1();
+    var a1 =1;
+    function foo1 () {
+        console.log(a1); // undefined
+        //原因： 声明本身会被提升，而包括函数表达式的赋值在内的赋值操作并不会提升
+    }
+
+    /*
+    * 函数表达式----demo3
+    * 1，此处与demo1的区别：函数的声明方式,
+    * 2，报typeError错误的原因：这段程序中的变量标识符 foo() 被提升并分配给所在作用域（在这里是全局作用域），因此
+    * foo() 不会导致 ReferenceError 。但是 foo 此时并没有赋值（如果它是一个函数声明而不
+    * 是函数表达式，那么就会赋值）。 foo() 由于对 undefined 值进行函数调用而导致非法操作，
+    * 因此抛出 TypeError 异常。
+    *
+    * */
+//    foo3();// TypeError: foo3 is not a function
+    var foo3 = function () {
+        console.log('这里是函数表达式的申明');
+    }
+
+
+    /*
+    * var的申明和函数的声明混合----demo4
+    * 打印这里是foo4的函数申明的原因：函数声明和变量声明都会被提升,但函数优先，其次才是变量
+    * */
+    foo4();// 这里是foo4的函数申明
+    var foo4 = function () {
+        console.log('这里是foo4的函数表达式');
+    }
+    function foo4 () {
+        console.log('这里是foo4的函数申明')
+    }
+
+    /*
+     * var的申明和函数的声明混合----demo5（重复声明）
+     * 重复声明会被覆盖
+     * */
+    foo5();
+    var b = true;
+    if(b){
+    	function foo5 () {
+            console.log('这里是if中的off5')
+        }
+    }else{
+    	function foo5 () {
+            console.log('这里是else中的foo5');
+        }
+    }
+    foo5();
+</script>

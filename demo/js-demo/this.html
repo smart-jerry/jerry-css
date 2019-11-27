@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <h3>一，关于this</h3>
+    this 实际上是在函数被调用时发生的绑定，它指向什么完全取决于函数在哪里被调用。
+</div>
+<div>
+    <h3>二，关于绑定规则</h3>
+    <ul>
+        <li>1,默认绑定。见demo1</li>
+        <li>2,隐式绑定。见demo2
+            <div>当函数引用有上下文对象时，隐式绑定规则会把函数调用中的 this 绑定到这个上下文对象</div>
+            <div>对象属性引用链中只有最顶层或者说最后一层会影响调用位置</div>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
+<script>
+    /*
+    * demo1-默认绑定
+    * 判断： foo() 是直接使用不带任何修饰的函数引用进行调用的，因此只能使用默认绑定，无法应用其他规则
+    * 在非严格模式下，this的绑定完全取决于调用位置。严格模式下，与调用位置无关
+    * */
+    function foo () {
+        console.log(this.a);
+    }
+    var a = 6;
+    foo();// 6
+
+
+    /*
+    * demo2 ---隐式绑定
+    * 因为调用 foo() 时 this 被绑定到 obj ，因此 this.a 和 obj.a 是一样的。
+    *
+    *
+    * */
+    function foo1 () {
+        console.log(this.a);
+    }
+    var obj={
+    	a:8,
+        foo1:foo1
+    }
+    obj.foo1();// 8
+
+
+</script>

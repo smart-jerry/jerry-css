@@ -61,6 +61,14 @@
         <li>1,softBind。见demo</li>
     </ul>
 </div>
+<div>
+    <h3>五，this词法--箭头函数</h3>
+    <ul>
+        <li>ES6 中的箭头函数并不会使用四条标准的绑定规则，而是根据当前的词法作用域来决定this ，<br>
+            具体来说，箭头函数会继承外层函数调用的 this 绑定（无论 this 绑定到什么）。<br>
+            这其实和 ES6 之前代码中的 self = this 机制一样。见demo5</li>
+    </ul>
+</div>
 </body>
 </html>
 <script>
@@ -187,4 +195,19 @@
 
     setTimeout(obj4_2.foo4,1000)// 此次绑定函数为：obj4-1
 
+
+    /*
+    * demo5-this词法（箭头函数）
+    *
+    * */
+    function foo5 () {
+        return (a)=>{
+        	// 箭头函数的this继承foo5
+        	console.log(this.a);
+        }
+    }
+    var obj5={a:100},
+        obj5_1={a:200}
+    var bar5=foo5.call(obj5);
+    bar5.call(obj5_1); // 100
 </script>

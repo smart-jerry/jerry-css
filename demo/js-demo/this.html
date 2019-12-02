@@ -16,9 +16,24 @@
         <li>2,隐式绑定。见demo2
             <div>当函数引用有上下文对象时，隐式绑定规则会把函数调用中的 this 绑定到这个上下文对象</div>
             <div>对象属性引用链中只有最顶层或者说最后一层会影响调用位置</div>
+            <div>缺点：会丢失对象。也就是说它会应用默认绑定，把this绑定到全局（非严格模式）或者undefined（严格模式）。见demo2中的bar1函数调用</div>
         </li>
         <li>3,显示绑定
-            <div></div>
+            <div>JavaScript 提供的绝大多数函数以及你自己创建的所有函数都可以使用 call(..) 和 apply(..) 方法</div>
+            <div>它们的第一个参数是一个对象，它们会把这个对象绑定到this ，接着在调用函数时指定这个 this。见demo3</div>
+            <ul>
+                <li>1,硬绑定：call,apply,bind
+                    <div>见demo3</div>
+                </li>
+                <li>2,api调用的“上下文”</li>
+            </ul>
+        </li>
+        <li>4,new 绑定
+            <div> new 来调用函数，或者说发生构造函数调用时，会自动执行下面的操作:</div>
+            <div>a. 创建（或者说构造）一个全新的对象。<br>
+                b. 这个新对象会被执行 [[ 原型 ]] 连接。<br>
+                c. 这个新对象会绑定到函数调用的 this 。<br>
+                d. 如果函数没有返回其他对象，那么 new 表达式中的函数调用会自动返回这个新对象。</div>
         </li>
     </ul>
     <h3>三，绑定的优先级</h3>
@@ -40,13 +55,19 @@
         </li>
     </ul>
 </div>
+<div>
+    <h3>四，绑定例外--软绑定</h3>
+    <ul>
+        <li>1,softBind。见demo</li>
+    </ul>
+</div>
 </body>
 </html>
 <script>
     /*
     * demo1-默认绑定
     * 判断： foo() 是直接使用不带任何修饰的函数引用进行调用的，因此只能使用默认绑定，无法应用其他规则
-    * 在非严格模式下，this的绑定完全取决于调用位置。严格模式下，与调用位置无关
+    * 在非严格模式下，this的绑定完全取决于调用位置。严格模式下，与调用位置无关，因此此处的this会绑定到undefined
     * */
     function foo () {
         console.log(this.a);
@@ -56,23 +77,50 @@
 
 
     /*
-    * demo2 ---隐式绑定
-    * 因为调用 foo() 时 this 被绑定到 obj ，因此 this.a 和 obj.a 是一样的。
+    * demo2 ---隐式绑定&绑定对象丢失
+    * 因为调用 foo1() 时 this 被绑定到 obj1 ，因此 this.a1 和 obj1.a1 是一样的。
+    * foo1的落脚点是obj1，根据隐式绑定规则，函数foo1内部的this所绑定的对象就是obj1
+    * 故，this.a1 === obj1.a1
     *
+    * 当obj1.foo1赋值给函数bar1时，bar1其实引用的是foo1函数本身，
+    * bar1===foo1
+    * 此处的bar1就是不带任何修饰的函数调用，故使用默认绑定，this===全局
     *
     * */
     function foo1 () {
-        console.log(this.a);
+        console.log(this.a1);
     }
-    var obj={
-    	a:8,
+    var obj1={
+    	a1:8,
         foo1:foo1
     }
-    obj.foo1();// 8
-
+    var a1 = 'my name is global a.'
+    obj1.foo1();// 8
+    var bar1 = obj1.foo1;
+    bar1(); // my name is global a.
 
     /*
-    * demo3---显示绑定
+    * demo2--回调时绑定对象丢失
+    * 解释：参数的传递是隐式赋值，当我们把函数obj1_2.foo1_2作为值传入时候，bar1_2中调用的fn就是foo1_2本身，
+    * 默认使用隐式绑定，故this===全局
+    * */
+    function foo1_2 () {
+        console.log(this.a1_2);
+    }
+    var obj1_2={
+        a1_2:'this is a1_2, a var which in obj1_2.',
+        foo1_2:foo1_2
+    }
+    var a1_2 = 'this is a1_2, a var which in global '
+    function bar1_2 (fn) {
+        var a1_2 = 'this is a1_2, a var which in bar1_2 '
+        fn();
+    }
+    bar1_2(obj1_2.foo1_2);// this is a1_2, a var which in global
+    bar1_2(foo1_2);// this is a1_2, a var which in global
+
+    /*
+    * demo3---显示绑定-硬绑定
     * call，apply
     * */
     function foo2 (s) {
@@ -82,13 +130,61 @@
     	a:9
     }
     function bar2 () {
-        foo2.call(obj2, 'This is foo2.')
+        foo2.call(obj2, 'This is foo2.')// call绑定
     }
-    bar2();
+    bar2();// 9====This is foo2.
+
+    var obj2_1 = {
+        a:10
+    }
+    var bar2_1 = foo2.bind(obj2_1);// bind绑定
+    bar2_1('this is foo2.bind');//10====this is foo2.bind
 
     /*
-    * demo3--new绑定
+    * demo3-显示绑定-上下文
+    * 原理同硬绑定，一般的第三方库。
     *
     *
     * */
+
+
+    /*
+    * demo4--绑定例外-软绑定softBind
+    *
+    *
+    * */
+    // 软绑定函数
+    if (!Function.prototype.softBind) {
+        Function.prototype.softBind = function(obj) {
+            var fn = this;
+            // 捕获所有 curried 参数
+            var curried = [].slice.call( arguments, 1 );
+            var bound = function() {
+                return fn.apply(
+                    (!this || this === (window || global)) ?obj : this,
+                curried.concat.apply( curried, arguments )
+                );
+            };
+            bound.prototype = Object.create( fn.prototype );
+            return bound;
+        };
+    }
+    function foo4 () {
+        console.log('此次绑定函数为：' + this.name);
+    }
+
+    var obj4={name:'obj4-1'},
+        obj4_2={name:'obj4-2'},
+        obj4_3={name:'obj4-3'};
+
+    var softBindFun = foo4.softBind(obj4);
+    softBindFun(); // 此次绑定函数为：obj4-1
+
+    obj4_2.foo4 = foo4.softBind(obj4);
+    obj4_2.foo4(); // 此次绑定函数为：obj4-2
+
+    softBindFun.call(obj4_3);// 此次绑定函数为：obj4-3
+
+    setTimeout(obj4_2.foo4,1000)// 此次绑定函数为：obj4-1
+
 </script>
